@@ -1,2 +1,2 @@
-.env
-tenant.env
+echo ".env" >> .gitignore
+echo "tenant.env" >> .gitignore
