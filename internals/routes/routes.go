@@ -16,4 +16,5 @@ func SetUPRouter(app *fiber.App, h *handlers.Handlers, cfg *config.Config) {
 	protect.Get("/all", h.ListAll)
 
 	protect.Get("/profile", h.Profile)
+	protect.Put("/profile", h.UpdateProfile)
 }
