@@ -33,7 +33,7 @@ func (s *UserService) Register(db *gorm.DB, u *models.User) error {
 }
 
 func (s *UserService) Login(db *gorm.DB, email, pass, tenant string) (*models.User, error) {
-	u, err := s.repo.FindByEmail(db, email)
+	u, err := s.repo.FindByEmailTenant(db, email, tenant)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (s *UserService) Login(db *gorm.DB, email, pass, tenant string) (*models.Us
 func (s *UserService) GetProfile(db *gorm.DB, id uint) (*models.User, error) {
 	return s.repo.FindByID(db, id)
 }
-func (s *UserService) UpdateProfile(db *gorm.DB,id uint,tenant string,name, email, password string) (*models.User, error) {
+func (s *UserService) UpdateProfile(db *gorm.DB, id uint, tenant string, name, email, password string) (*models.User, error) {
 
 	update := map[string]interface{}{}
 
