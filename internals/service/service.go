@@ -75,7 +75,7 @@ func (s *UserService) UpdateProfile(db *gorm.DB, id uint, tenant string, name, e
 		return nil, errors.New("no fields to update")
 	}
 
-	if err := s.repo.UpdateFields(db, id, update); err != nil {
+	if err := s.repo.UpdateFields(db, id, tenant, update); err != nil {
 		return nil, err
 	}
 
