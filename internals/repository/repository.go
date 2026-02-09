@@ -44,3 +44,18 @@ func (r *UserRepo) FindByID(db *gorm.DB, id uint) (*models.User, error) {
 
 	return &user, nil
 }
+func (r *UserRepo) UpdateFields(db *gorm.DB, id uint, fields map[string]interface{}) error {
+	return db.Model(&models.User{}).
+		Where("id = ?", id).
+		Updates(fields).Error
+}
+
+func (r *UserRepo) FindByEmailTenant(db *gorm.DB, email, tenant string) (*models.User, error) {
+	var user models.User
+	err := db.Where("email = ? AND tenant = ?", email, tenant).
+		First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
