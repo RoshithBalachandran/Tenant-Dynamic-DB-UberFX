@@ -134,3 +134,51 @@ func (h *Handlers) Profile(c *fiber.Ctx) error {
 		"tenant": user.Tenant,
 	})
 }
+func (h *Handlers) UpdateProfile(c *fiber.Ctx) error {
+	userID, ok := c.Locals("user_id").(uint)
+	if !ok {
+		return c.Status(401).JSON(fiber.Map{"error": "invalid user"})
+	}
+
+	tenant, ok := c.Locals("tenant").(string)
+	if !ok {
+		return c.Status(401).JSON(fiber.Map{"error": "invalid tenant"})
+	}
+
+	var body struct {
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := c.BodyParser(&body); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "invalid body"})
+	}
+
+	db, err := database.ConnectDB(h.cfg, tenant)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	user, err := h.srv.UpdateProfile(
+		db,
+		userID,
+		tenant,
+		body.Name,
+		body.Email,
+		body.Password,
+	)
+
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"user": fiber.Map{
+			"id":    user.ID,
+			"name":  user.Name,
+			"email": user.Email,
+		},
+	})
+}
