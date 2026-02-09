@@ -137,12 +137,12 @@ func (h *Handlers) Profile(c *fiber.Ctx) error {
 func (h *Handlers) UpdateProfile(c *fiber.Ctx) error {
 	userID, ok := c.Locals("user_id").(uint)
 	if !ok {
-		return c.Status(401).JSON(fiber.Map{"error": "invalid user"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid user"})
 	}
 
 	tenant, ok := c.Locals("tenant").(string)
 	if !ok {
-		return c.Status(401).JSON(fiber.Map{"error": "invalid tenant"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid tenant"})
 	}
 
 	var body struct {
@@ -152,12 +152,12 @@ func (h *Handlers) UpdateProfile(c *fiber.Ctx) error {
 	}
 
 	if err := c.BodyParser(&body); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "invalid body"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid body"})
 	}
 
 	db, err := database.ConnectDB(h.cfg, tenant)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	user, err := h.srv.UpdateProfile(
@@ -170,7 +170,7 @@ func (h *Handlers) UpdateProfile(c *fiber.Ctx) error {
 	)
 
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": err.Error()})
 	}
 
 	return c.JSON(fiber.Map{
